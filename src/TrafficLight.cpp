@@ -4,22 +4,37 @@
 
 /* Implementation of class "MessageQueue" */
 
-/* 
+
 template <typename T>
 T MessageQueue<T>::receive()
 {
-    // FP.5a : The method receive should use std::unique_lock<std::mutex> and _condition.wait() 
+    //The method receive should use std::unique_lock<std::mutex> and _condition.wait() 
     // to wait for and receive new messages and pull them from the queue using move semantics. 
-    // The received object should then be returned by the receive function. 
+    // The received object should then be ret    std::this_thread::sleep_for(std::chrono::milliseconds(100));        // perform vector modification under the lock
+    std::unique_lock<std::mutex> uLock(_msgmutex);
+    _cond.wait(uLock, [this] { return !_queue.empty(); }); // pass unique lock to condition variable
+
+        // remove last vector element from queue
+    T currphase = std::move(_queue.back());
+    _queue.pop_back();
+
+    return currphase; // will not be copied due to return value optimization (RVO) in C++urned by the receive function. 
 }
 
 template <typename T>
 void MessageQueue<T>::send(T &&msg)
 {
-    // FP.4a : The method send should use the mechanisms std::lock_guard<std::mutex> 
+    // The method send should use the mechanisms std::lock_guard<std::mutex> 
     // as well as _condition.notify_one() to add a new message to the queue and afterwards send a notification.
+
+     // perform queue modification under the lock
+    std::lock_guard<std::mutex> uLock(_msgmutex);
+
+    _queue.push_back(std::move(msg));
+    
+    _cond.notify_one(); // notify client after pushing new Vehicle into vector
 }
-*/
+
 
 /* Implementation of class "TrafficLight" */
 
