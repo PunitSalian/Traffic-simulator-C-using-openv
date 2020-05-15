@@ -35,12 +35,12 @@ template <typename T> void MessageQueue<T>::send(T &&msg) {
 
   _queue.push_back(std::move(msg));
 
-  _cond.notify_one(); // notify client after pushing new Vehicle into vector
+  _cond.notify_one(); // notify client after pushing new msg iin buffer
 }
 
 /* Implementation of class "TrafficLight" */
 
-/*
+
 TrafficLight::TrafficLight()
 {
     _currentPhase = TrafficLightPhase::red;
@@ -48,17 +48,24 @@ TrafficLight::TrafficLight()
 
 void TrafficLight::waitForGreen()
 {
-    // FP.5b : add the implementation of the method waitForGreen, in which an
-infinite while-loop
+    //add the implementation of the method waitForGreen, in which an
+     //infinite while-loop
     // runs and repeatedly calls the receive function on the message queue.
     // Once it receives TrafficLightPhase::green, the method returns.
+    while (true)
+    {
+      if(_messageq.receive() == GREEN){
+         return;
+      }
+    }
+    
 }
-*/
+
 
 TrafficLightPhase TrafficLight::getCurrentPhase() { return _currentPhase; }
 
 void TrafficLight::simulate() {
-  // FP.2b : Finally, the private method „cycleThroughPhases“ should be
+  // Finally, the private method „cycleThroughPhases“ should be
   // started in a thread when the public method „simulate“ is called. To do
   // this, use
   // the thread queue in the base class.
@@ -106,7 +113,7 @@ void TrafficLight::cycleThroughPhases() {
       } else {
         _currentPhase = GREEN;
       }
-
+      _messageq.send(std::move(_currentPhase));
       lastupdatedtime = std::chrono::system_clock::now();
     }
   }

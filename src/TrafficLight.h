@@ -51,6 +51,7 @@ private:
   // it by calling
   // send in conjunction with move semantics.
   void cycleThroughPhases();
+  MessageQueue<TrafficLightPhase> _messageq;
   TrafficLightPhase _currentPhase;
   std::condition_variable _condition;
   std::mutex _mutex;
