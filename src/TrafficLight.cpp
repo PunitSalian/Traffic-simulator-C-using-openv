@@ -40,27 +40,19 @@ template <typename T> void MessageQueue<T>::send(T &&msg) {
 
 /* Implementation of class "TrafficLight" */
 
+TrafficLight::TrafficLight() { _currentPhase = TrafficLightPhase::RED; }
 
-TrafficLight::TrafficLight()
-{
-    _currentPhase = TrafficLightPhase::red;
-}
-
-void TrafficLight::waitForGreen()
-{
-    //add the implementation of the method waitForGreen, in which an
-     //infinite while-loop
-    // runs and repeatedly calls the receive function on the message queue.
-    // Once it receives TrafficLightPhase::green, the method returns.
-    while (true)
-    {
-      if(_messageq.receive() == GREEN){
-         return;
-      }
+void TrafficLight::waitForGreen() {
+  // add the implementation of the method waitForGreen, in which an
+  // infinite while-loop
+  // runs and repeatedly calls the receive function on the message queue.
+  // Once it receives TrafficLightPhase::green, the method returns.
+  while (true) {
+    if (_messageq.receive() == GREEN) {
+      return;
     }
-    
+  }
 }
-
 
 TrafficLightPhase TrafficLight::getCurrentPhase() { return _currentPhase; }
 
@@ -91,8 +83,9 @@ double getRandomWaitTime() {
 // virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases() {
 
-  double cyclewaitime =getRandomWaitTime();
-  std::chrono::time_point<std::chrono::system_clock> lastupdatedtime;
+  double cyclewaitime = getRandomWaitTime();
+  std::chrono::time_point<std::chrono::system_clock> lastupdatedtime =
+      std::chrono::system_clock::now();
   // Implement the function with an infinite loop that measures the
   // time between two loop cycles
   // and toggles the current phase of the traffic light between red and green
@@ -104,9 +97,12 @@ void TrafficLight::cycleThroughPhases() {
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
     auto currtime = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::system_clock::now() - lastupdatedtime);
+                        std::chrono::system_clock::now() - lastupdatedtime)
+                        .count();
 
-    if (std::chrono::duration<double>(currtime).count() >= cyclewaitime) {
+    if (currtime >= cyclewaitime) {
+
+      cyclewaitime = getRandomWaitTime();
 
       if (_currentPhase == GREEN) {
         _currentPhase = RED;

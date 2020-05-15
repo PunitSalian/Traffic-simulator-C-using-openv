@@ -30,12 +30,12 @@ private:
       _queue; // list of all vehicles waiting to enter this intersection
 };
 
-enum TrafficLightPhase { GREEN, RED };
+enum TrafficLightPhase { RED, GREEN };
 
 class TrafficLight : public TrafficObject {
 public:
   // constructor / desctructor
-  TrafficLight() {}
+  TrafficLight();
   // getters / setters
 
   // typical behaviour methods
